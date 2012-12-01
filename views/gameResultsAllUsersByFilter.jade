@@ -1,0 +1,38 @@
+script(src='/javascripts/selectum/myLogger.js')
+
+#gameResultsByUser
+#gameResults
+
+section(class="featured")
+  div(class="content-wrapper")
+      hgroup(class="title")
+        h1=title 
+
+section(class="main-content")
+  h3 How did you do?
+  div
+    table.table.table-hover
+      thead
+        tr(class="navbar navbar-inverse gameResults") 
+          td 
+            span Favorite<br/>
+            span Spread<br/>
+            span Underdog
+          td
+          each game, i in gameResults
+            td(class="gameResults") 
+              span #{game.FavoriteTeamName}<br/>
+              span #{game.Spread}<br/>
+              span #{game.UnderdogTeamName}
+            td(class="gameResults")
+              span #{game.FavoriteScore}<br/>
+              span #{game.ScorePeriod}<br/>
+              span #{game.UnderdogScore}
+      tbody
+        each game, i in gameResultsByUser
+          tr(class="label label-inverse gameResults") 
+            td #{game.UserName}
+            td 
+            each userGameResult, x in game.gameResults
+              td(class=userGameResult.tdClass) #{userGameResult.PickTeamName}
+              td(class=userGameResult.tdClass) #{userGameResult.BetPoints}      

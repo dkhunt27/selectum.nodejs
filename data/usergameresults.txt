@@ -1,0 +1,14 @@
+insert into usergameresults
+select
+ugs.usergameselectionid,
+case when ugs.pick = 'No Bet' then 0
+ when ugs.pick = gr.winningteam then 1
+ else -1 end as betresult,
+case when ugs.pick = 'No Bet' then 0
+  when g.favorite = ugs.pick and ugs.pick = gr.winningteam then ugs.bet
+  when g.underdog = ugs.pick and ugs.pick = gr.winningteam then ugs.bet * 2
+  else ugs.bet*-1 end as betpoints
+from
+usergameselections ugs
+inner join gameresults gr on ugs.gameid = gr.gameid
+inner join games g on ugs.gameid = g.gameid

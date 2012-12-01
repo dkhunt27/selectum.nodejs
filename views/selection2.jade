@@ -1,0 +1,97 @@
+script(src='/javascripts/selectum/myLogger.js')
+script(src='/javascripts/selectum/selection/selectionLogging.js')
+script(src='/javascripts/selectum/selection/selectionCalculations.js')
+script(src='/javascripts/selectum/selection/selectionEvents.js')
+script(src='/javascripts/selectum/selection/selectionObjects.js')
+script(src='/javascripts/selectum/selection/selectionDomInteraction.js')
+
+section(class="featured")
+  div(class="content-wrapper")
+      hgroup(class="title")
+        h1=title 
+        h2 Make your selections for the week.
+      p Error messages here?
+
+section(class="main-content")
+  h3 Pick Your Games
+
+  games = [ {"favorite":"team a", "spread":-2, "underdog":"team b", "gamedate":"1/1/2012", "gametime":"1:00 PM"}, {"favorite":"team c", "spread":-4, "underdog":"team d", "gamedate":"1/1/2012", "gametime":"1:00 PM"}, {"favorite":"team e", "spread":-6, "underdog":"team f", "gamedate":"1/1/2012", "gametime":"4:00 PM"}, {"favorite":"team g", "spread":-8, "underdog":"team h", "gamedate":"1/1/2012", "gametime":"4:00 PM"}, {"favorite":"team i", "spread":-10, "underdog":"team j", "gamedate":"1/1/2012", "gametime":"4:00 PM"}];
+  totals = [ {"possibleBets": games.length, "placedBets":"0", "availablePoints":0, "spentPoints":0}];
+
+  - var possibleBets = games.length;
+  - var placedBets=0;
+  - var availablePoints=2;
+  - var spentPoints=0;
+
+  div
+    table.table
+      thead
+        tr 
+          th Possible Bets
+          th Placed Bets
+          th Available Points
+          th Spent Points  
+      tbody
+        tr
+          td 
+            span#possibleBets #{possibleBets}
+            input#maxPossibleBet(type='hidden', value=5)
+            input#requiredMinSpentPoints(type='hidden', value=availablePoints)
+          td 
+            span#placedBets #{placedBets}
+          td 
+            span#availablePoints #{availablePoints}
+          td 
+            span#spentPoints #{spentPoints}
+
+  div
+    table.table.table-hover
+      thead
+        tr
+          th No Bet
+          th Favorite
+          th Underdog
+          th Spread
+          th Date
+          th Time
+          th Your Selection
+          th Bet 1
+          th Bet 2
+          th Bet 3
+          th Bet 4
+          th Bet 5
+      tbody
+
+        each game, i in games
+
+          - var gamerow = "gameRow" + i
+          - var yourSelection = "yourSelection" + i
+          - var btnFavorite = "btnFavorite" + i
+          - var btnUnderdog = "btnUnderdog" + i
+          - var btnNoBet = "btnNoBet" + i
+          - var rowHasBet = "rowHasBet" + i
+          - var yourBetRadio = "radioYourBetG" + i
+          - var yourBet = "yourBetValue" + i
+          - var yourBetMinBet = "yourBetMinBet" + i
+          - var yourBetMaxBet = "yourBetMaxBet" + i
+
+          tr(id=gamerow).alert
+            td
+              button(id=btnNoBet).btn.btn-warning(type='submit', onClick='btnOnClick(#{i}, "No Bet", "label label-warning", "alert")') No Bet
+              input(id=yourBet, type='hidden', value=0)
+              input(id=yourBetMinBet, type='hidden', value=0)
+              input(id=yourBetMaxBet, type='hidden', value=0)
+            td 
+              button(id=btnFavorite).btn.btn-success(type='submit', onClick='btnOnClick(#{i}, "#{game.favorite}", "label label-success", "alert alert-success")') #{game.favorite}
+            td 
+              button(id=btnUnderdog).btn.btn-danger(type='submit', onClick='btnOnClick(#{i}, "#{game.underdog}", "label label-important", "alert alert-error")') #{game.underdog}
+            td #{game.spread}
+            td #{game.gamedate}
+            td #{game.gametime}
+            td 
+              span(id=yourSelection).label.label-warning No Bet
+              input(id=rowHasBet, type='hidden', value=0)
+            - for (var x = 1; x <= 5; ++x) {
+              td
+                input(id=yourBetRadio + "B" + x, type="radio", name="yourBet"+ i, value=x, disabled=true, checked=false, onClick='radioOnClick(this.id, #{i}, #{x})')
+            - }

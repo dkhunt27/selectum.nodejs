@@ -1,0 +1,47 @@
+script(src='/javascripts/selectum/myLogger.js')
+script(src='/javascripts/selectum/selection/gameFilterResultsForUser.js')
+
+#gameFilters
+#games
+#totals
+#config
+
+section(class="featured")
+  div(class="content-wrapper")
+      hgroup(class="title")
+        h1=title 
+        h2 The results of your selections.
+      p Select week: 
+        select#gameFilter
+          each gameFilter, i in gameFilters
+            option(value=gameFilter.gameFilterId) #{gameFilter.gameFilterName}
+
+section(class="main-content")
+  h3 How did you do?
+  div
+    table.table.table-hover
+      tbody
+        tr
+          td Favorite
+          td
+          each game, i in gameResultsByUser
+            td #{game.FavoriteTeamName}
+            td #{game.FavoriteScore}
+        tr
+          td Spread
+          td 
+          each game, i in gameResultsByUser
+            td #{game.Spread}
+            td #{game.ScorePeriod}
+        tr
+          td Underdog
+          td 
+          each game, i in gameResultsByUser
+            td #{game.UnderdogTeamName}
+            td #{game.UnderdogScore}
+        tr
+          td User
+          td Total
+          each game, i in gameResultsByUser
+            td #{game.PickTeamName}
+            td #{game.BetPoints}

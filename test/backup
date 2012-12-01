@@ -1,0 +1,122 @@
+var assert = require("assert");
+var server = require("../middleware/userManagement0.9.js");
+
+describe ("server", function() {
+    describe("#addUser", function(){
+
+        var usersById = {};
+        var mysql = require('mysql');
+        var mysqldb = mysql.createClient({
+            host     : 'localhost',
+            port     : 3306,
+            user     : 'root',
+            password : '',
+            database : 'selectum',
+            debug : false
+        });
+
+        it.skip("should add the user without error", function(done){
+
+            var source = "facebook";
+            var sourceUser = {
+                id: '1591006653',
+                name: 'Dan Hunt',
+                first_name: 'Dan',
+                last_name: 'Hunt',
+                link: 'http://www.facebook.com/dkhunt27',
+                username: 'dkhunt27',
+                about: 'Does fuzzy logic tickle?',
+                location: { id: '', name: null },
+                work: [ { employer: [Object] } ],
+                gender: 'male',
+                timezone: -8,
+                locale: 'en_US',
+                verified: true,
+                updated_time: '2012-03-28T19:39:08+0000' };
+
+            server.addUser(mysqldb, source, sourceUser, usersById, function(err){
+                if (err) throw err;
+                done();
+
+                mysqldb.end();
+            })
+        })
+    })
+});
+describe ("dto", function() {
+    describe("#create", function(){
+
+        it.skip("should complete", function(done){
+        console.log("start");
+
+        var sequelize = require('sequelize');
+        var sqlize = new sequelize('selectum', 'root', {
+            host: 'localhost',
+            logging : false,
+            port: 3306,
+            sync: { force: true }
+        });
+
+        var games = sqlize.import(__dirname + '/games.js');
+        var teams = sqlize.import(__dirname + '/teams.js');
+        var users = sqlize.import(__dirname + '/users.js');
+
+        var team = teams.build({teamName: 'abc'});
+        console.log(team.id + ',' + team.teamName);
+        team.save().success(function() {
+            console.log("teams save successfully");
+        });
+
+        team.save().error(function() {
+            console.log("teams save error");
+        });
+
+        teams
+            .build({teamName: 'def'})
+            .save()
+            .success(function(anotherTeam){
+                console.log("anotherTeam");
+            });
+
+        var user = users.build({FacebookUserId: 12345, FacebookUserName: 'abc' });
+        console.log(user.FacebookUserId + ',' + user.FacebookUserName);
+        users.sync();
+
+        user.save().success(function() {
+            console.log("teams save successfully");
+        });
+
+        user.save().error(function() {
+            console.log("teams save error");
+        });
+
+        users
+            .build({FacebookUserId: 12378, FacebookUserName: 'xyz' })
+            .save()
+            .success(function(anotherUser){
+                console.log("anotherUser");
+            });
+
+        //games.hasOne(teams);
+        sqlize.sync()
+            .on('success', function() {
+                console.log('success');
+                users
+                    .create({ FacebookUserId: 12345, FacebookUserName: 'abc' })
+                    .on('success', function() {
+                        users.create({ FacebookUserId: 12346, FacebookUserName: 'def' })
+                            .on('success', function() {
+                                console.log('success');
+                            })
+                    })
+            })
+            .on('error', function() {
+                console.log('error');
+            })
+            .on('failure', function() {
+                console.log('failure');
+            })
+        });
+    }) ;
+});
+

@@ -1,0 +1,93 @@
+select concat('{gameId:',GameId,', winningTeam:"',WinningTeam,'"},')
+from
+  gameresults
+  
+  
+  select concat('{userGameSelectionId:',UserGameSelectionId,', betResult:',BetResult,', betPoints:',BetPoints,'},')
+from
+  usergameresults
+  
+  
+  
+  insert into Teams(TeamName)
+Select distinct
+  replace(favorite,'At ','')
+from
+    games
+
+insert into Teams(TeamName)
+select distinct
+  replace(underdog,'At ','')
+from
+    games
+where
+    replace(underdog,'At ','') not in (select teamname from teams)
+	
+	
+	update games g, teams f, teams u
+set
+    FavoriteTeamId = f.teamid,
+    UnderdogTeamId = u.teamid,
+    spread = g.spread2,
+    FavoriteIsHomeTeam = case when instr(g.Favorite, 'At ') > 0 then 1 else 0 end
+where
+    replace(g.Favorite, 'At ', '') = f.teamname and
+    replace(g.Underdog, 'At ', '') = u.teamname
+
+	update gameresults gr, games g
+set
+    winningteam = case when g.favorite = gr.winningteam then g.favoriteteamid else g.underdogteamid end,
+    favoritescore = case when g.favorite = gr.winningteam then 2 else 1 end,
+    underdogscore = case when g.underdog = gr.winningteam then 2 else 1 end,
+    quarter = 'F'
+where  g.gameid = gr.gameid
+
+
+select 
+gf.GameFilterId, gf.GameFilterName ,g.GameId,g.FavoriteTeamId, ft.TeamName as FavoriteTeamName,
+g.Spread,g.UnderdogTeamId, ut.TeamName as UnderdogTeamName,g.GameDateTime,
+gr.WinningTeamId, wt.TeamName as WinningTeamName,
+u.UserId,u.UserName,ugs.PickTeamId, pt.TeamName as PickTeamName,ugs.Bet,ugr.BetResult,
+ugr.BetPoints, gr.FavoriteScore, gr.UnderdogScore, 'F' as ScorePeriod
+
+from games g 
+inner join teams ft on g.favoriteteamid = ft.teamid
+inner join teams ut on g.underdogteamid = ut.teamid
+inner join gameresults gr on g.GameId = gr.GameId 
+inner join teams wt on gr.WinningTeamId = wt.teamid
+inner join usergameselections ugs on g.GameId = ugs.GameId
+inner join teams pt on ugs.PickTeamId = pt.teamId
+inner join usergameresults ugr on ugs.UserGameSelectionId = ugr.UserGameSelectionId
+inner join users u on ugs.UserId = u.UserId 
+inner join gamefilters gf on g.GameFilterId = gf.GameFilterId
+ order by gf.GameFilterId,u.UserId,g.GameId
+ 
+ 
+ 
+ 
+ select 
+concat( '{',
+' GameFilterId:',GameFilterId ,
+', GameFilterName:"' ,GameFilterName,
+'", GameId:',GameId,
+', FavoriteTeamId:', FavoriteTeamId,
+', FavoriteTeamName:"',FavoriteTeamName,
+'", Spread:',Spread,
+', UnderdogTeamId:', UnderdogTeamId,
+', UnderdogTeamName:"',UnderdogTeamName,
+'", GameDateTime:"',GameDateTime,
+'", WinningTeamId:', WinningTeamId,
+', WinningTeamName:"',WinningTeamName,
+'", UserId:',UserId,
+', UserName:"',UserName,
+'", PickTeamId:',PickTeamId,
+', PickTeamName:"',PickTeamName,
+'", Bet:',Bet,
+', BetResult:',BetResult,
+', BetPoints:', BetPoints,
+', FavoriteScore:', FavoriteScore,
+', UnderdogScore:', UnderdogScore,
+', ScorePeriod:"',ScorePeriod,
+'"},')
+from
+gameresultsbyuserbygamefilter

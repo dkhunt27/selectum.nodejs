@@ -1,0 +1,2 @@
+PATH=$PATH:$HOME/bin:/usr/local/mysql/bin
+EXPORT PATH
